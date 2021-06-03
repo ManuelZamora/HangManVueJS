@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Ahorcado</title>
+    <style type="text/css">
+        #app{
+            background-color: #cecece;
+            border: 4px solid green;
+            border-radius: 10px;
+            padding-top: 10px;
+        }
+        .teclado{
+            margin-top: 5px;
+            margin-left: 4px;
+            width: 35px;
+            display: inline-grid;
+            border: 2px solid green;
+            border-radius: 100px;
+            background-color: #ebf5fb;
+            text-align: center;
+            cursor: pointer;
+        }
+        ul#horizontal-list li{
+            display: inline;
+        }
+        ul#horizontal-list button{
+            margin-left: 10px;
+            width: 40px;
+        }
+        .cuadro{
+            width: 30px;
+            margin-left: 4px;
+            border: 4px solid #3486e4;
+            border-radius: 5px;
+            background: black;
+            color: blue;
+            height: 30px;
+            text-align: center;
+            padding-top: 3px;
+            padding-left: 3px;
+            font-size: 1em;
+        }
+        .rojo{
+            background-color: red;
+        }
+        .verde{
+            background-color: rgb(10, 187, 10);
+        }
+        #controlSuccess{
+            border:4px solid green ;
+        }
+        #controlError{
+            border:4px solid red ;
+        }
+    
+        </style>
+    </head>
+<body>
+    <div id="app" class="container-fluid">
+        <div v-if="win" class="text-center">
+            <img src="./img/winner.jpg" width="50%" height="50%" alt="" />
+        </div>
+
+        <div v-if="lost" class="text-center">
+            <img src="img/loser.jpg" width="30%" height="30%" alt="" />
+        </div>
+        <div class="row">
+
+            
+
+            <div class="col-sm-12">
+                <h3 class="text-center text-info">AHORCADO</h3>
+
+                <ul class="horizontal-list text-center text-dark">
+                    <button v-for="item in palabra_escrita" type="button" class="btn btn-primary cuadro">
+                        <span class="badge">{{item}}</span>
+                    </button>
+                </ul>
+            </div>
+
+            <div class="container text-center">
+
+                <div class="col-sm-12">
+                    <span v-for="(letra,index) in letras">
+                        <button class="teclado" @click="comparar(letra,index)" :disabled="botones[index]"
+                        :class="{verde:color_botones[index]=='verde',rojo:color_botones[index]=='rojo'}">{{letra}}</button>
+                    </span> 
+                </div>
+
+            </div>
+            
+            <div class="row">
+
+                <div class="col-xs-8 col-sm-8 col-md-8">
+                    <!--Aqui va la imagen--> 
+                    <div>
+                        <img width="30%" height="30%" :src="'img/'+contador_errores+'.png'" alt=""/>
+                    </div>
+                </div>
+                
+                <div class="co-xs-4 col-sm-4 col-md-4">
+                    <label for="">ACIERTOS</label>
+                    <input type="text" class="form-control" v-model="contador_aciertos" disabled id="controlSuccess">
+                    <label for="">ERRORES</label>
+                    <input type="text" class="form-control" v-model="contador_errores" disabled id="controlError">
+                    <label for="" class="mt-2" v-if="lost">La palabra era <strong>{{palabra_generada}}</strong></label>
+                </div>
+                <div class="text-center mb-2">
+                    <button class="btn btn-info text-dark" @click="generarAleatorio()">New Game</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el:'#app',
+            data:{
+                game: true,
+                win: false,
+                lost: false,
+                contador_aciertos: 0,
+                contador_errores: 0,
+                aleatorio: 0,
+                palabra_escrita: [],
+                botones:[],
+                color_botones: [],
+                letras:"ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
+                palabras:['laptop','angular','vuejs','flask','adonis','sistemas']
+                
+            },
+            methods: {
+                generarAleatorio:function(){
+                    this.game = true
+                    this.win = false
+                    this.lost = false
+                    this.palabra_escrita = []
+                    this.botones = []
+                    this.color_botones = []
+                    this.contador_aciertos = 0
+                    this.contador_errores = 0
+                    this.aleatorio = Math.floor(Math.random()*this.palabras.length)
+                    for(var i = 0; i < this.palabras[this.aleatorio].length; i++){
+                        this.palabra_escrita.push('')
+                    }
+                    return this.aleatorio
+                },
+                comparar:function(caracter,posicion){
+                    if(this.game){
+                        Cflag = 0
+                        this.botones[posicion] = true
+                        for(i=0;i <= this.palabra_generada.length;i++){
+                            if(caracter.toLowerCase()== this.palabra_generada[i]){
+                                this.palabra_escrita[i] = caracter
+                                Cflag++
+                                this.contador_aciertos++
+                            }
+                        }
+                        if(Cflag == 0){
+                            this.contador_errores++
+                            this.color_botones[posicion] = 'rojo'
+                        }
+                        else{
+                            this.color_botones[posicion] = 'verde'
+                        }
+                        if(this.contador_aciertos == this.palabra_generada.length){
+                            this.win = true
+                            this.game = false
+                        }
+                        if(this.contador_errores == 5){
+                            this.lost = true
+                            this.game = false
+                        }
+                    }
+                }
+            },
+            computed: {
+                palabra_generada:function(){
+                    return this.palabras[this.aleatorio]
+                }
+            }, 
+            created:function() {
+                this-generarAleatorio()
+            }
+        })
+    </script>
+</body>
+</html>

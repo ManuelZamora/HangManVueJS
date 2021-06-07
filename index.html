@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Ahorcado</title>
+    </head>
+<body>
+    <div id="app" class="container-fluid">
+    <!--Mensaje según el resultado-->
+        <div v-if="win" class="text-center">
+            <v-alert type="primary">
+                <h1>
+                    Ganaste!!!!
+                </h1>
+            </v-alert>
+        </div>
+
+        <div v-if="lost" class="text-center">
+            <v-alert type="primary">
+                <h1>
+                    Perdiste!!!!
+                </h1>
+            </v-alert>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <!--Palabra generada para el juego-->
+                <ul class="horizontal-list text-center text-dark">
+                    <button v-for="item in palabra_escrita" type="button" class="btn btn-primary cuadro">
+                        <span class="badge">{{item}}</span>
+                    </button>
+                </ul>
+            </div>
+            <!-- Inicio Botones de letras -->
+            <div class="container text-center">
+                <div class="col-sm-12">
+                    <span v-for="(letra,index) in letras">
+                        <button class="teclado" @click="comp(letra,index)" :disabled="botones[index]"
+                        :class="{verde:color_botones[index]=='verde',rojo:color_botones[index]=='rojo'}">{{letra}}</button>
+                    </span> 
+                </div>
+
+            </div>
+            <!-- Fin Botones de letras -->
+            <div class="row">
+
+                <div class="col-xs-8 col-sm-8 col-md-8">
+                    <!--Imagen ahorcado, va apareciendo segun el contador de errores--> 
+                    <div>
+                        <img width="30%" height="30%" :src="'img/'+contador_errores+'.png'" alt=""/>
+                    </div>
+                </div>
+                <!--Contadores-->
+                <div class="co-xs-4 col-sm-4 col-md-4">
+                    <label for="">ACIERTOS</label>
+                    <input type="text" class="form-control" v-model="contador_aciertos" disabled id="controlSuccess">
+                    <label for="">ERRORES</label>
+                    <input type="text" class="form-control" v-model="contador_errores" disabled id="controlError">
+                    <!--Se mostrara la palabra si el jugador pierde-->
+                    <label for="" class="mt-2" v-if="lost">La palabra era: <h2>{{palabra_generada}}</h2></label>
+                </div>
+                <!--Boton Nuevo juego-->
+                <div class="text-center mb-2">
+                    <button class="btn btn-info text-dark" @click="generarAleatorio()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <!--Logica VueJS-->
+    <script src="/js/main.js"></script>
+</body>
+</html>
